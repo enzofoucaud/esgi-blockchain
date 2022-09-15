@@ -1,25 +1,25 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
-/// The Order struct
-struct Order {
-    uint256 id;
-    address sender;
-    address receiver;
-    uint256 amount;
-    uint256 deadline;
-    OrderStatus status;
-}
-
-// Enum status of order
-enum OrderStatus {
-    Created,
-    Completed
-}
-
 contract Cooldown {
+    /// The Order struct
+    struct Order {
+        uint256 id;
+        address sender;
+        address receiver;
+        uint256 amount;
+        uint256 deadline;
+        OrderStatus status;
+    }
+
+    // Enum status of order
+    enum OrderStatus {
+        Created,
+        Completed
+    }
+
     /// The mapping to store orders
-    mapping(uint256 => Order) private orders;
+    mapping(uint256 => Order) public orders;
 
     /// The sequence number of orders
     uint256 orderseq;
@@ -27,20 +27,19 @@ contract Cooldown {
     event Deposit(address sender, uint256 amount);
     event Withdraw(address sender);
 
-    function deposit(
-        address receiver,
-        uint256 deadline
-    ) public payable {
+    function deposit(address receiver, uint256 deadline) public payable {
         /// Increment the order sequence
         orderseq++;
 
-        /// Create the order register
-        orders[orderseq].id = orderseq;
-        orders[orderseq].sender = msg.sender;
-        orders[orderseq].receiver = receiver;
-        orders[orderseq].amount = msg.value;
-        orders[orderseq].deadline = deadline;
-        orders[orderseq].status = OrderStatus.Created;      
+        /// Store the order
+        orders[orderseq] = Order({
+            id: orderseq,
+            sender: msg.sender,
+            receiver: receiver,
+            amount: msg.value,
+            deadline: deadline,
+            status: OrderStatus.Created
+        });
 
         emit Deposit(msg.sender, msg.value);
     }
