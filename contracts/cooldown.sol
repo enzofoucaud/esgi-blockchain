@@ -140,7 +140,7 @@ contract Cooldown {
         require(order.status != OrderStatus.Pending, "The order is pending, it must be completed or canceled");
 
         /// Check the deadline
-        require(block.timestamp > order.deadline, "Order is not completed");
+        require(block.timestamp > order.deadline, "Deadline is not reached");
 
 
         if (msg.sender == order.receiver && order.status == OrderStatus.Confirmed) {
