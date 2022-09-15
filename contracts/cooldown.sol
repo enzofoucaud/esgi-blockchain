@@ -4,7 +4,6 @@ pragma solidity >=0.4.22 <0.9.0;
 contract Cooldown {
     /// The Order struct
     struct Order {
-        uint256 id;
         address sender;
         address receiver;
         uint256 amount;
@@ -31,12 +30,14 @@ contract Cooldown {
         /// Increment the order sequence
         orderseq++;
 
+        // New value with 1% fee
+        uint256 amount = msg.value * 99 / 100;
+
         /// Store the order
         orders[orderseq] = Order({
-            id: orderseq,
             sender: msg.sender,
             receiver: receiver,
-            amount: msg.value,
+            amount: amount,
             deadline: deadline,
             status: OrderStatus.Created
         });
