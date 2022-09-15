@@ -125,7 +125,7 @@ contract Cooldown {
         }
     }
 
-    function withdraw(uint256 id) public payable {
+    function withdraw(uint256 id) public {
         /// Get the order
         Order storage order = orders[id];
 
@@ -140,7 +140,7 @@ contract Cooldown {
         require(order.status != OrderStatus.Pending, "The order is pending, it must be completed or canceled");
 
         /// Check the deadline
-        require(order.deadline > block.timestamp, "Order is not completed");
+        require(block.timestamp > order.deadline, "Order is not completed");
 
 
         if (msg.sender == order.receiver && order.status == OrderStatus.Confirmed) {
