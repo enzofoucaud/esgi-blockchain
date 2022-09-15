@@ -1,25 +1,25 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
+/// The Order struct
+struct Order {
+    uint256 id;
+    address sender;
+    address receiver;
+    uint256 amount;
+    uint256 deadline;
+    OrderStatus status;
+}
+
+// Enum status of order
+enum OrderStatus {
+    Created,
+    Completed
+}
+
 contract Cooldown {
-    // Enum status of order
-    enum OrderStatus {
-        Created,
-        Completed
-    }
-
-    /// The Order struct
-    struct Order {
-        uint256 id;
-        address sender;
-        address receiver;
-        uint256 amount;
-        uint256 deadline;
-        OrderStatus status;
-    }
-
     /// The mapping to store orders
-    mapping(uint256 => Order) orders;
+    mapping(uint256 => Order) private orders;
 
     /// The sequence number of orders
     uint256 orderseq;
@@ -27,7 +27,11 @@ contract Cooldown {
     event Deposit(address sender, uint256 amount);
     event Withdraw(address sender);
 
-    function deposit(address receiver, uint amount, uint deadline) public payable {
+    function deposit(
+        address receiver,
+        uint256 amount,
+        uint256 deadline
+    ) public payable {
         /// Increment the order sequence
         orderseq++;
 
