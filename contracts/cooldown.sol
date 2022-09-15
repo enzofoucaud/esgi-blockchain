@@ -32,14 +32,12 @@ contract Cooldown {
         orderseq++;
 
         /// Create the order register
-        orders[orderseq] = Order(
-            orderseq,
-            msg.sender,
-            receiver,
-            msg.value,
-            deadline,
-            OrderStatus.Created
-        );
+        orders[orderseq].id = orderseq;
+        orders[orderseq].sender = msg.sender;
+        orders[orderseq].receiver = receiver;
+        orders[orderseq].amount = msg.value;
+        orders[orderseq].deadline = deadline;
+        orders[orderseq].status = OrderStatus.Created;      
 
         emit Deposit(msg.sender, msg.value);
     }
