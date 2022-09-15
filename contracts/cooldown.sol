@@ -125,7 +125,7 @@ contract Cooldown {
         }
     }
 
-    function withdraw(uint256 id) public {
+    function withdraw(uint256 id) public payable {
         /// Get the order
         Order storage order = orders[id];
 
