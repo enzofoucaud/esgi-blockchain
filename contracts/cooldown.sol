@@ -125,9 +125,9 @@ contract Cooldown {
         }
     }
 
-    function withdraw(uint256 id) public {
+    function withdraw(uint256 orderid) public {
         /// Get the order
-        Order storage order = orders[id];
+        Order storage order = orders[orderid];
 
         // Check the receiver && sender
         require(
