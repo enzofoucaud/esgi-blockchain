@@ -142,7 +142,6 @@ contract Cooldown {
         /// Check the deadline
         require(block.timestamp > order.deadline, "Deadline is not reached");
 
-
         if (msg.sender == order.receiver && order.status == OrderStatus.Confirmed) {
             payable(order.receiver).transfer(order.amount);
             emit WithdrawByReceiver(order.receiver);
@@ -155,7 +154,5 @@ contract Cooldown {
 
         /// Update the order status
         order.status = OrderStatus.Completed;
-
-
     }
 }
