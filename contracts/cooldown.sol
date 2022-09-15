@@ -17,6 +17,7 @@ contract Cooldown {
     enum OrderStatus {
         Pending,
         Completed,
+        Confirmed,
         Canceled
     }
 
@@ -69,7 +70,7 @@ contract Cooldown {
         }
 
         if (order.senderStatus == UserStatus.OK && order.receiverStatus == UserStatus.OK) {
-            order.status = OrderStatus.Completed;
+            order.status = OrderStatus.Confirmed;
         }
     }
 
@@ -123,7 +124,7 @@ contract Cooldown {
         require(order.deadline > block.timestamp, "Order is not completed");
 
 
-        if (msg.sender == order.receiver && order.status == OrderStatus.Completed) {
+        if (msg.sender == order.receiver && order.status == OrderStatus.Confirmed) {
             payable(order.receiver).transfer(order.amount);
             emit Withdraw(order.receiver);
         } else if (msg.sender == order.sender && order.status == OrderStatus.Canceled) {
