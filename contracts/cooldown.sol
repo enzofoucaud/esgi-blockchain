@@ -27,7 +27,7 @@ contract Cooldown {
     event Deposit(address sender, uint256 amount);
     event Withdraw(address sender);
 
-    function deposit(address receiver, uint deadline) public payable {
+    function deposit(address receiver, uint amount, uint deadline) public payable {
         /// Increment the order sequence
         orderseq++;
 
@@ -36,7 +36,7 @@ contract Cooldown {
             orderseq,
             msg.sender,
             receiver,
-            msg.value,
+            amount,
             deadline,
             OrderStatus.Created
         );
