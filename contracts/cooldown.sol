@@ -29,10 +29,13 @@ contract Cooldown {
     }
 
     /// The mapping to store orders
-    mapping(uint256 => Order) public orders;
+    mapping(uint256 => Order) private _orders;
 
     /// The sequence number of orders
-    uint256 orderseq;
+    uint256 private _orderseq;
+
+    /// Address of the owner
+    address private _owner;
 
     event Deposit(address sender, uint256 amount);
     event WithdrawByReceiver(address receiver);
@@ -47,15 +50,19 @@ contract Cooldown {
     event ConfirmationCancelledBySender(address sender);
     event ConfirmationCancelledByReceiver(address receiver);
 
+    constructor() {
+        _owner = msg.sender;
+    }
+
     function deposit(address receiver, uint256 deadline) public payable {
         /// Increment the order sequence
-        orderseq++;
+        _orderseq++;
 
         // New value with 1% fee
         uint256 amount = msg.value * 99 / 100;
 
         /// Store the order
-        orders[orderseq] = Order({
+        _orders[_orderseq] = Order({
             sender: msg.sender,
             receiver: receiver,
             amount: amount,
@@ -69,7 +76,7 @@ contract Cooldown {
     }
 
     function confirmation(uint256 orderid) public {
-        Order storage order = orders[orderid];
+        Order storage order = _orders[orderid];
 
         if (order.sender == msg.sender) {
             order.senderStatus = UserStatus.OK;
@@ -88,7 +95,7 @@ contract Cooldown {
     }
 
     function cancelConfirmation(uint256 orderid) public {
-        Order storage order = orders[orderid];
+        Order storage order = _orders[orderid];
 
         if (order.sender == msg.sender) {
             order.senderStatus = UserStatus.NOK;
@@ -107,7 +114,7 @@ contract Cooldown {
     }
 
     function cancelOrder(uint256 orderid) public {
-        Order storage order = orders[orderid];
+        Order storage order = _orders[orderid];
 
         if (order.sender == msg.sender) {
             order.senderStatus = UserStatus.CANCEL;
@@ -127,7 +134,7 @@ contract Cooldown {
 
     function withdraw(uint256 id) public {
         /// Get the order
-        Order storage order = orders[id];
+        Order storage order = _orders[id];
 
         // Check the receiver && sender
         require(
@@ -157,5 +164,17 @@ contract Cooldown {
         order.status = OrderStatus.Completed;
 
 
+    }
+
+    function consultOrder(uint256 id) public view returns (address, address, uint256, uint256, OrderStatus, UserStatus, UserStatus) {
+        Order storage order = _orders[id];
+        require(order.sender == msg.sender || order.receiver == msg.sender, "You are not the sender or receiver");
+        return (order.sender, order.receiver, order.amount, order.deadline, order.status, order.senderStatus, order.receiverStatus);
+    }
+
+    function withdrawSC() public {
+        //check if the sender is the owner of the contract
+        require(msg.sender == _owner, "You are not the owner of the contract");
+        payable(_owner).transfer(address(this).balance);
     }
 }
