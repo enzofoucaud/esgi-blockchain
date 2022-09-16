@@ -58,6 +58,8 @@ contract Cooldown {
     }
 
     function createOrder(address receiver, uint256 deadline) public payable {
+        require(msg.sender != receiver, "You cannot create an order to yourself");
+
         /// Increment the order sequence
         _orderseq++;
 
