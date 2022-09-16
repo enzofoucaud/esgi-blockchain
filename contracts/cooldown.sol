@@ -37,7 +37,10 @@ contract Cooldown {
     /// Address of the owner
     address private _owner;
 
-    event Deposit(address sender, uint256 amount);
+    /// Amount withdrawable by the owner
+    uint256 private _ownerAmount;
+
+    event CreateOrder(address sender, uint256 amount);
     event WithdrawByReceiver(address receiver);
     event WithdrawBySender(address sender);
     event OrderConfirmed(uint256 orderid);
@@ -54,12 +57,15 @@ contract Cooldown {
         _owner = msg.sender;
     }
 
-    function deposit(address receiver, uint256 deadline) public payable {
+    function createOrder(address receiver, uint256 deadline) public payable {
+        require(msg.sender != receiver, "You cannot create an order to yourself");
+
         /// Increment the order sequence
         _orderseq++;
 
         // New value with 1% fee
         uint256 amount = msg.value * 99 / 100;
+        _ownerAmount += msg.value - amount;
 
         /// Store the order
         _orders[_orderseq] = Order({
@@ -72,7 +78,7 @@ contract Cooldown {
             receiverStatus: UserStatus.NOK
         });
 
-        emit Deposit(msg.sender, msg.value);
+        emit CreateOrder(msg.sender, msg.value);
     }
 
     function confirmation(uint256 orderid) public {
@@ -132,7 +138,7 @@ contract Cooldown {
         }
     }
 
-    function withdraw(uint256 orderid) public {
+    function withdrawOrder(uint256 orderid) public {
         /// Get the order
         Order storage order = _orders[orderid];
 
@@ -172,6 +178,7 @@ contract Cooldown {
     function withdrawSC() public {
         //check if the sender is the owner of the contract
         require(msg.sender == _owner, "You are not the owner of the contract");
-        payable(_owner).transfer(address(this).balance);
+        payable(_owner).transfer(_ownerAmount);
+        _ownerAmount = 0;
     }
 }
