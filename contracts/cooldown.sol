@@ -37,6 +37,9 @@ contract Cooldown {
     /// Address of the owner
     address private _owner;
 
+    /// Amount withdrawable by the owner
+    uint256 private _ownerAmount;
+
     event Deposit(address sender, uint256 amount);
     event WithdrawByReceiver(address receiver);
     event WithdrawBySender(address sender);
@@ -60,6 +63,7 @@ contract Cooldown {
 
         // New value with 1% fee
         uint256 amount = msg.value * 99 / 100;
+        _ownerAmount += msg.value - amount;
 
         /// Store the order
         _orders[_orderseq] = Order({
@@ -172,6 +176,7 @@ contract Cooldown {
     function withdrawSC() public {
         //check if the sender is the owner of the contract
         require(msg.sender == _owner, "You are not the owner of the contract");
-        payable(_owner).transfer(address(this).balance);
+        payable(_owner).transfer(_ownerAmount);
+        _ownerAmount = 0;
     }
 }
