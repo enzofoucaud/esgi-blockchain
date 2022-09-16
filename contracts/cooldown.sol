@@ -40,7 +40,7 @@ contract Cooldown {
     /// Amount withdrawable by the owner
     uint256 private _ownerAmount;
 
-    event Deposit(address sender, uint256 amount);
+    event CreateOrder(address sender, uint256 amount);
     event WithdrawByReceiver(address receiver);
     event WithdrawBySender(address sender);
     event OrderConfirmed(uint256 orderid);
@@ -57,7 +57,7 @@ contract Cooldown {
         _owner = msg.sender;
     }
 
-    function deposit(address receiver, uint256 deadline) public payable {
+    function createOrder(address receiver, uint256 deadline) public payable {
         /// Increment the order sequence
         _orderseq++;
 
@@ -76,7 +76,7 @@ contract Cooldown {
             receiverStatus: UserStatus.NOK
         });
 
-        emit Deposit(msg.sender, msg.value);
+        emit CreateOrder(msg.sender, msg.value);
     }
 
     function confirmation(uint256 orderid) public {
@@ -136,7 +136,7 @@ contract Cooldown {
         }
     }
 
-    function withdraw(uint256 orderid) public {
+    function withdrawOrder(uint256 orderid) public {
         /// Get the order
         Order storage order = _orders[orderid];
 
