@@ -132,9 +132,9 @@ contract Cooldown {
         }
     }
 
-    function withdraw(uint256 id) public {
+    function withdraw(uint256 orderid) public {
         /// Get the order
-        Order storage order = _orders[id];
+        Order storage order = _orders[orderid];
 
         // Check the receiver && sender
         require(
@@ -149,7 +149,6 @@ contract Cooldown {
         /// Check the deadline
         require(block.timestamp > order.deadline, "Deadline is not reached");
 
-
         if (msg.sender == order.receiver && order.status == OrderStatus.Confirmed) {
             payable(order.receiver).transfer(order.amount);
             emit WithdrawByReceiver(order.receiver);
@@ -162,8 +161,6 @@ contract Cooldown {
 
         /// Update the order status
         order.status = OrderStatus.Completed;
-
-
     }
 
     function consultOrder(uint256 id) public view returns (address, address, uint256, uint256, OrderStatus, UserStatus, UserStatus) {
