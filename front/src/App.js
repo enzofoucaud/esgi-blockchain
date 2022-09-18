@@ -19,7 +19,9 @@ import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import NumbersIcon from '@mui/icons-material/Numbers';
 import CancelScheduleSendIcon from '@mui/icons-material/CancelScheduleSend';
-
+import ButtonGroup from '@mui/material/ButtonGroup';
+import IconButton from '@mui/material/IconButton';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 
 function App() {
 	const [haveMetamask, sethaveMetamask] = useState(true);
@@ -33,7 +35,14 @@ function App() {
 
 	const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-	const [isFormShown, setIsFormShown] = useState(false);
+	const [isTransferShown, setIsTransferShown] = useState(false);
+	const [isWOrderShown, setIsWOrderShown] = useState(false);
+	const [isCancelConfirmShown, setIsCancelConfirmShown] = useState(false);
+	const [isCancelOrderShown, setIsCancelOrderShown] = useState(false);
+	const [isConfirmOrderShown, setIsConfirmOrderShown] = useState(false);
+	const [isWOwnerShown, setIsWOwnerShown] = useState(false);
+	const [isConsultOrderShown, setIsConsultOrderShown] = useState(false);
+	const [value, setValue] = React.useState(dayjs());
 
 	const theme = createTheme({
 		palette: {
@@ -44,9 +53,9 @@ function App() {
 				contrastText: '#fff',
 			},
 			secondary: {
-				light: '#ffee33',
-				main: '#ffea00',
-				dark: '#b2a300',
+				light: '#637bfe',
+				main: '#3d5afe',
+				dark: '#2a3eb1',
 				contrastText: '#fff',
 			},
 			mode: 'dark',
@@ -85,10 +94,58 @@ function App() {
 		}
 	};
 
-	const showTransferForm = event => {
-		// 👇️ only show element on click
-		setIsFormShown(true);
+	const hideAll = () => {
+		setIsTransferShown(false);
+		setIsWOrderShown(false);
+		setIsCancelConfirmShown(false);
+		setIsCancelOrderShown(false);
+		setIsConfirmOrderShown(false);
+		setIsWOwnerShown(false);
+		setIsConsultOrderShown(false);
 	};
+
+	const showTransfer = event => {
+		// 👇️ only show element on click
+		hideAll();
+		setIsTransferShown(true);
+	};
+
+	const showWOrder = event => {
+		// 👇️ only show element on click
+		hideAll();
+		setIsWOrderShown(true);
+	};
+
+	const showCancelConfirm = event => {
+		// 👇️ only show element on click
+		hideAll();
+		setIsCancelConfirmShown(true);
+	};
+
+	const showCancelOrder = event => {
+		// 👇️ only show element on click
+		hideAll();
+		setIsCancelOrderShown(true);
+	};
+
+	const showConfirmOrder = event => {
+		// 👇️ only show element on click
+		hideAll();
+		setIsConfirmOrderShown(true);
+	};
+
+	const showWOwner = event => {
+		// 👇️ only show element on click
+		hideAll();
+		setIsWOwnerShown(true);
+	};
+
+	const showConsultOrder = event => {
+		// 👇️ only show element on click
+		hideAll();
+		setIsConsultOrderShown(true);
+	};
+
 
 	return (
 		<div className="App">
@@ -117,11 +174,20 @@ function App() {
 							{isConnected ? (
 								<div>
 									<p className="info">🎉 Connected Successfully</p>
-									<Button variant="contained" onClick={showTransferForm}>Create order</Button>
+									<ButtonGroup color="secondary" aria-label="medium secondary button group">
+										<Button variant="outlined" onClick={showTransfer} disableElevation>Create order</Button>
+										<Button variant="outlined" onClick={showWOrder} disableElevation>Withdraw order</Button>
+										<Button variant="outlined" onClick={showConfirmOrder} disableElevation>Confirm order</Button>
+										<Button variant="outlined" onClick={showCancelConfirm} disableElevation>Cancel confirmation</Button>
+										<Button variant="outlined" onClick={showCancelOrder} disableElevation>Cancel order</Button>
+										<Button variant="outlined" onClick={showConsultOrder} disableElevation>Consult order</Button>
+										<Button variant="outlined" onClick={showWOwner} disableElevation>Withdraw Owner Balance</Button>
+									</ButtonGroup>
 
-									{/* 👇️ show elements on click */}
-									{isFormShown && (
-										<Box sx={{ display: 'flex', flexDirection: 'column', '& > :not(style)': { m: 1 } }}>
+
+									<Box sx={{ display: 'flex', flexDirection: 'column', '& > :not(style)': { m: 1 } }}>
+										{/* 👇️ show elements on click */}
+										{isTransferShown && (
 											<div sx={{ display: 'flex', justifyContent: 'flex-start' }}>
 												<h3 style={{ color: 'white' }}>Create order</h3>
 												<FormControl variant="standard">
@@ -153,24 +219,23 @@ function App() {
 													/>
 												</FormControl>
 												<FormControl variant="standard">
-													<TextField
-														id="input-with-icon-textfield"
+
+													<DateTimePicker
+														renderInput={(props) => <TextField {...props} />}
 														label="Deadline"
-														InputProps={{
-															startAdornment: (
-																<InputAdornment position="start">
-																	<HourglassTopIcon />
-																</InputAdornment>
-															),
+														value={value}
+														onChange={(newValue) => {
+															setValue(newValue);
 														}}
-														variant="standard"
 													/>
 
 												</FormControl>
-												<Button variant="contained" endIcon={<SendIcon />}>
-													Pay Order
-												</Button>
+												<IconButton variant="contained">
+													<SendIcon />
+												</IconButton>
 											</div>
+										)}
+										{isWOrderShown && (
 											<div>
 												<h3 style={{ color: 'white' }}>Withdraw order</h3>
 												<FormControl variant="standard">
@@ -188,10 +253,12 @@ function App() {
 													/>
 
 												</FormControl>
-												<Button variant="contained" endIcon={<SendIcon />}>
-													Withraw
-												</Button>
+												<IconButton variant="contained">
+													<SendIcon />
+												</IconButton>
 											</div>
+										)}
+										{isConfirmOrderShown && (
 											<div>
 												<h3 style={{ color: 'white' }}>Confirm order</h3>
 												<FormControl variant="standard">
@@ -209,10 +276,12 @@ function App() {
 													/>
 
 												</FormControl>
-												<Button variant="contained" endIcon={<SendIcon />}>
-													Confirm
-												</Button>
+												<IconButton variant="contained">
+													<SendIcon />
+												</IconButton>
 											</div>
+										)}
+										{isCancelConfirmShown && (
 											<div>
 												<h3 style={{ color: 'white' }}>Cancel confirmation</h3>
 												<FormControl variant="standard">
@@ -230,10 +299,12 @@ function App() {
 													/>
 
 												</FormControl>
-												<Button variant="contained" endIcon={<CancelScheduleSendIcon />}>
-													Cancel confirmation
-												</Button>
+												<IconButton variant="contained">
+													<CancelScheduleSendIcon />
+												</IconButton>
 											</div>
+										)}
+										{isCancelOrderShown && (
 											<div>
 												<h3 style={{ color: 'white' }}>Cancel order</h3>
 												<FormControl variant="standard">
@@ -251,16 +322,17 @@ function App() {
 													/>
 
 												</FormControl>
-												<Button variant="contained" endIcon={<CancelScheduleSendIcon />}>
-													Cancel order
-												</Button>
+												<IconButton variant="contained">
+													<CancelScheduleSendIcon />
+												</IconButton >
 											</div>
-										</Box>
+										)}
+									</Box>
 
 
 
 
-									)}
+
 								</div>
 							) : (
 								<button className="btn" onClick={connectWallet}>
